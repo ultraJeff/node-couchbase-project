@@ -2,11 +2,14 @@
 
 const couchbase = require('couchbase')
 
-const endpoint = 'cb-example-srv.openshift-operators.srv.cluster.local';
+const endpoint = 'couchbase://cb-example';
 
 async function main() {
   console.log('trying to connect to', endpoint);
-  const cluster = await couchbase.connect('couchbase://' +endpoint+'?console_log_level=5', {username: 'Administrator', password: 'password'});
+  const cluster = await couchbase.connect(`${endpoint}`, {
+    username: 'Administrator',
+    password: 'password',
+  })
 
   const result = await cluster.ping();
   console.log('did we ping it', result);
