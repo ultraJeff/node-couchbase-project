@@ -2,11 +2,18 @@
 
 const couchbase = require('couchbase')
 
+const endpoint = 'cb-example-ui-openshift-operators.apps.cluster-btzr5.btzr5.sandbox1554.opentlc.com';
+
 async function main() {
-  const cluster = await couchbase.connect('couchbase://cb-example-ui-openshift-operators.apps.cluster-btzr5.btzr5.sandbox1554.opentlc.com', {
-    username: 'Administrator',
-    password: 'password',
-  })
+  console.log('trying to connect')
+  var cluster = await couchbase.connect('couchbase://' +endpoint+'?ssl=no_verify&console_log_level=5', {username: 'Administrator', password: 'password'});
+  // const cluster = await couchbase.connect('couchbase://cb-example-ui-openshift-operators.apps.cluster-btzr5.btzr5.sandbox1554.opentlc.com', {
+  //   username: 'Administrator',
+  //   password: 'password',
+  // })
+
+  const result = await cluster.ping();
+  console.log('did we ping it', result);
 
   // get a reference to our bucket
   const bucket = cluster.bucket('tweets')
@@ -14,29 +21,6 @@ async function main() {
 
   // get a reference to the default collection, required for older Couchbase server versions
   const collection_default = bucket.defaultCollection()
-
-//   const airline = {
-//     type: 'airline',
-//     id: 8091,
-//     callsign: 'CBS',
-//     iata: 'IATA',
-//     icao: 'ICAO',
-//     name: 'Couchbase Airways',
-//   }
-
-//   const upsertDocument = async (doc) => {
-//     try {
-//       // key will equal: "airline_8091"
-//       const key = `${doc.type}_${doc.id}`
-//       const result = await collection.upsert(key, doc)
-//       console.log('Upsert Result: ')
-//       console.log(result)
-//     } catch (error) {
-//       console.error(error)
-//     }
-//   }
-
-//   await upsertDocument(airline)
 
   const getVaccinationsByKey = async (key) => {
     try {
