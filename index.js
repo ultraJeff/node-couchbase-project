@@ -2,15 +2,11 @@
 
 const couchbase = require('couchbase')
 
-const endpoint = 'cb-example-ui-openshift-operators.apps.cluster-btzr5.btzr5.sandbox1554.opentlc.com';
+const endpoint = 'cb-example-srv.openshift-operators.srv.cluster.local';
 
 async function main() {
   console.log('trying to connect')
-  var cluster = await couchbase.connect('couchbase://' +endpoint+'?ssl=no_verify&console_log_level=5', {username: 'Administrator', password: 'password'});
-  // const cluster = await couchbase.connect('couchbase://cb-example-ui-openshift-operators.apps.cluster-btzr5.btzr5.sandbox1554.opentlc.com', {
-  //   username: 'Administrator',
-  //   password: 'password',
-  // })
+  const cluster = await couchbase.connect('couchbase://' +endpoint+'?console_log_level=5', {username: 'Administrator', password: 'password'});
 
   const result = await cluster.ping();
   console.log('did we ping it', result);
