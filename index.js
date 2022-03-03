@@ -2,6 +2,14 @@
 
 const couchbase = require('couchbase')
 
+const express = require("express");
+  
+const app = express();
+
+app.listen(5000, () => {
+  console.log(`Server is up and running on 5000 ...`)
+});
+
 const endpoint = 'couchbase://cb-example';
 
 async function main() {
@@ -15,15 +23,17 @@ async function main() {
   console.log('did we ping it', result);
 
   // get a reference to our bucket
-  const bucket = cluster.bucket('tweets')
+  // const bucket = cluster.bucket('tweets')
 
 
   // get a reference to the default collection, required for older Couchbase server versions
-  const collection_default = bucket.defaultCollection()
+  // const collection_default = bucket.defaultCollection()
 
-  const getVaccinationsByKey = async (key) => {
+  const getVaccinations = async () => {
     try {
-      const result = await bucket.get(key)
+      const result = await cluster.query(`
+      SELECT * FROM \`tweets\`
+      `)
       console.log('Get Result: ')
       console.log(result)
     } catch (error) {
@@ -31,13 +41,11 @@ async function main() {
     }
   }
 
-  await getVaccinationsByKey('Province_State')
+  await getVaccinations
+
 }
 
-// Run the main function
-main()
-  .catch((err) => {
-    console.log('ERR:', err)
-    process.exit(1)
-  })
-  .then(process.exit)
+app.get("/", (req, res) => {
+  let data = main();
+  res.send(data)
+})
