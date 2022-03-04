@@ -1,14 +1,8 @@
 'use strict'
 
 const couchbase = require('couchbase')
-
 const express = require("express");
-  
 const app = express();
-
-app.listen(8080, () => {
-  console.log(`Server is up and running on 8080 ...`)
-});
 
 const endpoint = 'couchbase://cb-example';
 
@@ -22,13 +16,6 @@ async function main() {
   const result = await cluster.ping();
   console.log('did we ping it', result);
 
-  // get a reference to our bucket
-  // const bucket = cluster.bucket('tweets')
-
-
-  // get a reference to the default collection, required for older Couchbase server versions
-  // const collection_default = bucket.defaultCollection()
-
   const getVaccinations = async () => {
     try {
       const result = await cluster.query(`
@@ -41,11 +28,14 @@ async function main() {
     }
   }
 
-  await getVaccinations
+  app.get("/", (req, res) => {
+    let data = await getVaccinations();
+    res.send(data)
+  })
 
+  app.listen(8080, () => {
+    console.log(`Server is up and running on 8080 ...`)
+  });
 }
 
-app.get("/", (req, res) => {
-  let data = main();
-  res.send(data)
-})
+main();
