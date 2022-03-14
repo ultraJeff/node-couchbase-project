@@ -28,9 +28,26 @@ async function main() {
       console.error(error)
     }
   }
+  
+  const selectStateFromBucket = async (state) => {
+    try {
+      const result = await cluster.query(`
+      SELECT * FROM \`${BUCKET}\` WHERE Province_State = "${state}"
+      `)
+      return result;
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   app.get("/", runAsync(async (req, res) => {
     let data = await selectAllFromBucket();
+    res.send(data)
+  }))
+  
+  app.get("/state/:state", runAsync(async (req, res) => {
+    let state = req.params.state;
+    let data = await selectStateFromBucket(state);
     res.send(data)
   }))
 
