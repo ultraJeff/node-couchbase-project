@@ -1,28 +1,28 @@
 'use strict'
 
+const config = require('./config')(process.env);
+const { PORT, BUCKET, USERNAME, PASSWORD, CB_ENDPOINT } = config;
 const couchbase = require('couchbase')
 const express = require("express");
 const app = express();
 
-const endpoint = 'couchbase://cb-example';
+const endpoint = `couchbase://${CB_ENDPOINT}`;
 console.log('Connecting to: ', endpoint);
 
 async function main() {
   const cluster = await couchbase.connect(`${endpoint}`, {
-    username: 'Administrator',
-    password: 'password',
+    username: USERNAME,
+    password: PASSWORD,
   })
 
   const pingResults = await cluster.ping();
   console.log('Couchbase up and running', pingResults);
 
-  const getVaccinations = async () => {
+  const selectAllFromBucket = async () => {
     try {
-      // const result = 'hello'
       const result = await cluster.query(`
-      SELECT * FROM \`tweets\`
+      SELECT * FROM \`${BUCKET}\`
       `)
-      console.log('Get Results: ', result)
       return result;
     } catch (error) {
       console.error(error)
@@ -30,12 +30,12 @@ async function main() {
   }
 
   app.get("/", runAsync(async (req, res) => {
-    let data = await getVaccinations();
+    let data = await selectAllFromBucket();
     res.send(data)
   }))
 
-  app.listen(8080, () => {
-    console.log(`Server is up and running on 8080 ...`)
+  app.listen(PORT, () => {
+    console.log(`Server is up and running on ${PORT} ...`)
   });
 }
 
